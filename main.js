@@ -1,46 +1,57 @@
-const vanGoghUrl = "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=Gogh"
-const apiUrlGogh = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
-let id = "436724"
+const getGoghUrl = "https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=Gogh"
+const apiLink = "https://collectionapi.metmuseum.org/public/collection/v1/objects/"
 
-// Get van Gogh artwork Ids - Total 207
-fetch(`${vanGoghUrl}`)
+
+// Get van Gogh artwork IDs
+fetch(`${getGoghUrl}`)  // Gogh only 
   .then(response => response.json())
-  .then(data => console.log(data))
+  .then(data => {
+    // console.log('1:', data.objectIDs);
+    return data;
+  })
+  .then(data => {
+    let objectIDs = data.objectIDs; // Get ObjectIds
+    let objectID = objectIDs[Math.floor(Math.random() * objectIDs.length)]; // Select a random Id
+    console.log(objectID);
 
-// Select a random ID
-// let getId = response.objectIDs[Math.floor(Math.random() * response.objectIDs.length)]
-// console.log(getId);
+    fetch(`${apiLink}` + objectID) // Fetch url for the random selected artwork
+      .then(resp => resp.json())
+      .then(data => {
+        console.log(data);
 
+        // Output
+        let title = document.querySelector(".title");
+        title.innerHTML = `${data.title} `;
 
-// let showID = document.querySelector('.show-id');
-// showID.innerHTML = `${getId}`
-// Create a variable for the URL.
+        let department = document.querySelector('.department');
+        department.innerHTML = `Department: ${data.department} `
 
+        if (`${data.culture}` === '') {
+        } else {
+          let culture = document.querySelector('.culture');
+          culture.innerHTML = `Culture: ${data.culture} `
+        }
 
+        if (`${data.period}` === '') {
+        } else {
+          let period = document.querySelector('.period');
+          period.innerHTML = `Period: ${data.period}`
+        }
 
-// Bring the random ID here - how? 
-fetch(`${apiUrlGogh}${id}`)
-  .then(response => response.json())
-  .then(displayResults);
+        let objectEndDate = document.querySelector('.objectEndDate');
+        objectEndDate.innerHTML = `Date: ${data.objectEndDate} `
 
+        let primaryImage = document.querySelector(".photo");
+        primaryImage.innerHTML = `<img src="${data.primaryImage}" class="img-fluid" > `;
 
-function displayResults(data) {
-  console.log(data);
-  let title = document.querySelector(".title");
-  title.innerHTML = `${data.title} `;
+        let artistDisplayName = document.querySelector('.artistDisplayName');
+        artistDisplayName.innerHTML = `${data.artistDisplayName} `
 
-  let department = document.querySelector('.department');
-  department.innerHTML = `${data.department} `
+        let artistNationality = document.querySelector('.artistNationality');
+        artistNationality.innerHTML = `${data.artistNationality} `
 
-  let objectEndDate = document.querySelector('.objectEndDate');
-  objectEndDate.innerHTML = `${data.objectEndDate} `
+        let artistDisplayBio = document.querySelector('.artistDisplayBio');
+        artistDisplayBio.innerHTML = `${data.artistDisplayBio} `
+      })
+  })
 
-  let primaryImage = document.querySelector(".photo");
-  primaryImage.innerHTML = `<img src="${data.primaryImage}" class="img-fluid" > `;
-
-  let artistDisplayName = document.querySelector('.artistDisplayName');
-  artistDisplayName.innerHTML = `${data.artistDisplayName} `
-
-  let artistDisplayBio = document.querySelector('.artistDisplayBio');
-  artistDisplayBio.innerHTML = `${data.artistDisplayBio} `
-}
